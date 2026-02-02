@@ -62,6 +62,13 @@ def create_accounts():
 ######################################################################
 
 # ... place you code here to LIST accounts ...
+@app.route("/accounts", methods=["GET"])
+def list_accounts():
+    account_all = Account.all()
+    accounts = [a.serialize() for a in account_all]
+    return make_response(
+        jsonify(accounts), status.HTTP_200_OK
+    )  
 
 
 ######################################################################
@@ -69,20 +76,49 @@ def create_accounts():
 ######################################################################
 
 # ... place you code here to READ an account ...
+@app.route("/accounts/<int:account_id>", methods=["GET"])
+def read_account(account_id):
+    acc = Account.find(account_id)
+    if not acc:
+        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{account_id}] could not be found.")
+    return acc.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
 
-# ... place you code here to UPDATE an account ...
+@app.route("/accounts/<int:account_id>", methods=["PUT"])
+def update_accounts(account_id):
+    app.logger.info("Request to update an Account with id: %s", account_id)
+
+    account = Account.find(account_id)
+    if not account:
+        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{account_id}] could not be found.")
+
+    account.deserialize(request.get_json())
+    account.update()
+
+    return account.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
 
-# ... place you code here to DELETE an account ...
+@app.route("/accounts/<int:account_id>", methods=["DELETE"])
+def delete_accounts(account_id):
+    """
+    Delete an Account
+    This endpoint will delete an Account based on the account_id that is requested
+    """
+    app.logger.info("Request to delete an Account with id: %s", account_id)
+
+    account = Account.find(account_id)
+    if account:
+        account.delete()
+
+    return "", status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
@@ -100,3 +136,8 @@ def check_content_type(media_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {media_type}",
     )
+
+def test_method_not_allowed(self):
+    """It should not allow an illegal method call"""
+    resp = self.client.delete(BASE_URL)
+    self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
