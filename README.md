@@ -1,6 +1,8 @@
 # DevOps Capstone Template
 Project name: devops-capstone-project
 
+![Build Status](https://github.com/otamatoni/devops-capstone-project/actions/workflows/ci-build.yaml/badge.svg)
+
 Description: Repository containing the Devops capstone project for Coursera course.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
